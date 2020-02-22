@@ -1,0 +1,12 @@
+<%- include("partials/header") %>
+
+<h1>Create a new campground</h1>
+<h4>Default image: https://www.photosforclass.com/download/pixabay-500716?webUrl=https%3A%2F%2Fpixabay.com%2Fget%2F53e0d5444b54b108f5d084609620367d1c3ed9e04e507441772c73d69e48c2_960.jpg&user=466654</h4>
+<form action="/campgrounds" method="POST">
+    <input type="text" name="name" placeholder="name">
+    <input type="text" name="image" placeholder="image url">
+    <button>Submit!</button>
+</form>
+
+<a href="/campgrounds">Go back to all campgrounds</a>
+<%- include("partials/footer") %>
