@@ -40,6 +40,7 @@ app.get("/", function (req, res)
     res.render("landing");
 });
 
+// INDEX (RESTful route)
 app.get("/campgrounds", function (req, res)
 {
     campground.find({}, function (error, campgrounds)
@@ -54,6 +55,14 @@ app.get("/campgrounds", function (req, res)
     });
 });
 
+// NEW (RESTful route)
+app.get("/campgrounds/new", function (req, res)
+{
+    // Shows form that calls POST /campgrounds when submitted
+    res.render("new");
+});
+
+// CREATE (RESTful route)
 app.post("/campgrounds", function (req, res)
 {
     var name = req.body.name;
@@ -74,12 +83,7 @@ app.post("/campgrounds", function (req, res)
     });
 });
 
-app.get("/campgrounds/new", function (req, res)
-{
-    // Shows form that calls POST /campgrounds when submitted
-    res.render("new");
-});
-
+// SHOW (RESTful route)
 app.get("/campgrounds/:id", function (req, res)
 {
     campground.findById(req.params.id, function (error, foundCampground)
@@ -96,6 +100,10 @@ app.get("/campgrounds/:id", function (req, res)
         }
     });    
 });
+
+// EDIT (RESTful route)
+// UPDATE (RESTful route)
+// DESTROY (RESTful route)
 
 app.listen(3000, function ()
 {
