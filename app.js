@@ -63,7 +63,7 @@ app.post("/campgrounds", function (req, res)
 // SHOW (RESTful route)
 app.get("/campgrounds/:id", function (req, res)
 {
-    campground.findById(req.params.id, function (error, foundCampground)
+    campground.findById(req.params.id).populate("comments").exec(function (error, foundCampground)
     {
         if (error)
         {
