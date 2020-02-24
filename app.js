@@ -2,11 +2,15 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 var campground = require("./models/campground");
-var app = express();
+var user = require("./models/user");
+var comment = require("./models/comment");
+var seedDB = require("./seeds");
 
+var app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUnifiedTopology: true });
+seedDB();
 
 app.get("/", function (req, res)
 {
