@@ -27,7 +27,7 @@ app.get("/campgrounds", function (req, res)
             console.log(error);
         } else
         {
-            res.render("campgrounds", { campgrounds: campgrounds });
+            res.render("campgrounds/index", { campgrounds: campgrounds });
         }
     });
 });
@@ -36,7 +36,7 @@ app.get("/campgrounds", function (req, res)
 app.get("/campgrounds/new", function (req, res)
 {
     // Shows form that calls POST /campgrounds when submitted
-    res.render("new");
+    res.render("campgrounds/new");
 });
 
 // CREATE (RESTful route)
@@ -73,14 +73,32 @@ app.get("/campgrounds/:id", function (req, res)
         {
             console.log("Found campground");
             console.log(foundCampground);
-            res.render("show", { campground: foundCampground });
+            res.render("campgrounds/show", { campground: foundCampground });
         }
-    });    
+    });
 });
 
 // EDIT (RESTful route)
 // UPDATE (RESTful route)
 // DESTROY (RESTful route)
+
+//================
+// COMMENTS ROUTES
+//================
+
+app.get("/campgrounds/:id/comments/new", function (req, res)
+{
+    res.render("comments/new");
+});
+
+app.post("/campgrounds/:id/comments", function (req, res)
+{
+    res.render("comments/new");
+});
+
+//================
+// COMMENTS ROUTES
+//================
 
 app.listen(3000, function ()
 {
