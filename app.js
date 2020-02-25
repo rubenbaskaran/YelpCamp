@@ -5,6 +5,8 @@ var campground = require("./models/campground");
 var User = require("./models/user");
 var Comment = require("./models/comment");
 var seedDB = require("./seeds");
+passport = require("passport");
+LocalStrategy = require("passport-local");
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -12,6 +14,20 @@ app.set("view engine", "ejs");
 mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUnifiedTopology: true });
 app.use(express.static(__dirname + "/public"));
 seedDB();
+
+// Passport config
+app.use(require("express-session")({
+    secret: "this is a secret message",
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+// Passport config
 
 app.get("/", function (req, res)
 {
@@ -124,13 +140,57 @@ app.post("/campgrounds/:id/comments", function (req, res)
                     campground.save();
                     res.redirect("/campgrounds/" + campground._id);
                 }
-            })            
+            })
         }
     })
 });
 
 //================
 // COMMENTS ROUTES
+//================
+
+//================
+// AUTH ROUTES
+//================
+
+app.get("/register", function (req, res)
+{
+    res.render("authentication/register");
+});
+
+app.post("/register", function (req, res)
+{
+    var newUser = new User({ username: req.body.username });
+    User.register(newUser, req.body.password, function (err, user)
+    {
+        if (err)
+        {
+            console.log(err);
+            return res.render("authentication/register");
+        }
+        passport.authenticate("local")(req, res, function ()
+        {
+            res.redirect("/campgrounds");
+        });
+    });
+});
+
+app.get("/login", function (req, res)
+{
+    res.render("authentication/login");
+});
+
+app.post("/login", passport.authenticate("local",
+    {
+        successRedirect: "/campgrounds",
+        failureRedirect: "/login"
+    }), function (req, res)
+    {
+        res.render("authentication/login");
+    });
+
+//================
+// AUTH ROUTES
 //================
 
 app.listen(3000, function ()
