@@ -184,10 +184,7 @@ app.post("/login", passport.authenticate("local",
     {
         successRedirect: "/campgrounds",
         failureRedirect: "/login"
-    }), function (req, res)
-    {
-        res.render("authentication/login");
-    });
+    }), function (req, res){});
 
 //================
 // AUTH ROUTES
