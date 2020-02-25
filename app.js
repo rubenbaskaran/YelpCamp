@@ -15,7 +15,10 @@ mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUn
 app.use(express.static(__dirname + "/public"));
 seedDB();
 
-// Passport config
+//================
+// PASSPORT CONFIG
+//================
+
 app.use(require("express-session")({
     secret: "this is a secret message",
     resave: false,
@@ -27,12 +30,34 @@ app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-// Passport config
+
+//================
+// PASSPORT CONFIG
+//================
+
+//============
+// COMMON CODE 
+//============
+
+// How to pass user details in all routes
+app.use(function (req, res, next)
+{
+    res.locals.currentUser = req.user;
+    next();
+});
 
 app.get("/", function (req, res)
 {
     res.render("landing");
 });
+
+//============
+// COMMON CODE 
+//============
+
+//==================
+// CAMPGROUND ROUTES
+//==================
 
 // INDEX (RESTful route)
 app.get("/campgrounds", function (req, res)
@@ -44,6 +69,7 @@ app.get("/campgrounds", function (req, res)
             console.log(error);
         } else
         {
+            // Passing current user details
             res.render("campgrounds/index", { campgrounds: campgrounds });
         }
     });
@@ -99,11 +125,15 @@ app.get("/campgrounds/:id", function (req, res)
 // UPDATE (RESTful route)
 // DESTROY (RESTful route)
 
+//==================
+// CAMPGROUND ROUTES
+//==================
+
 //================
 // COMMENTS ROUTES
 //================
 
-app.get("/campgrounds/:id/comments/new", function (req, res)
+app.get("/campgrounds/:id/comments/new", isLoggedIn, function (req, res)
 {
     campground.findById(req.params.id, function (error, campground)
     {
@@ -117,7 +147,7 @@ app.get("/campgrounds/:id/comments/new", function (req, res)
     });
 });
 
-app.post("/campgrounds/:id/comments", function (req, res)
+app.post("/campgrounds/:id/comments", isLoggedIn, function (req, res)
 {
     campground.findById(req.params.id, function (err, campground)
     {
@@ -184,7 +214,22 @@ app.post("/login", passport.authenticate("local",
     {
         successRedirect: "/campgrounds",
         failureRedirect: "/login"
-    }), function (req, res){});
+    }), function (req, res) { });
+
+app.get("/logout", function (req, res)
+{
+    req.logout();
+    res.redirect("/campgrounds");
+});
+
+function isLoggedIn(req, res, next)
+{
+    if (req.isAuthenticated())
+    {
+        return next();
+    }
+    res.redirect("/login");
+};
 
 //================
 // AUTH ROUTES
