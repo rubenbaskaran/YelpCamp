@@ -102,6 +102,24 @@ router.put("/campgrounds/:id", function (req, res)
     });
 });
 
+// Delete campground
+router.delete("/campgrounds/:id", function (req, res)
+{
+    campground.findByIdAndRemove(req.params.id, function (error)
+    {
+        if (error)
+        {
+            console.log("Error deleting campground");   
+            res.redirect("/campgrounds");
+        }
+        else
+        {
+            console.log("Succesfully deleted campground");            
+            res.redirect("/campgrounds");
+        }
+    });
+});
+
 // Middleware for checking authorization
 function isLoggedIn(req, res, next)
 {
