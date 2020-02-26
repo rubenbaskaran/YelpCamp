@@ -20,7 +20,7 @@ router.get("/campgrounds", function (req, res)
 
 // Show "add campground" view
 router.get("/campgrounds/new", isLoggedIn, function (req, res)
-{    
+{
     res.render("campgrounds/new");
 });
 
@@ -69,52 +69,50 @@ router.get("/campgrounds/:id", function (req, res)
 });
 
 // Show "edit campground" view
-router.get("/campgrounds/:id/edit", function (req, res)
+router.get("/campgrounds/:id/edit", checkCampgroundOwnership, function (req, res)
 {
     campground.findById(req.params.id, function (error, foundCampground)
     {
         if (error)
         {
-            console.log(error);
+            res.redirect("back");
         }
         else
         {
-            console.log("Found campground");
-            console.log(foundCampground);
             res.render("campgrounds/edit", { campground: foundCampground });
         }
     });
 });
 
 // Save campground changes to database
-router.put("/campgrounds/:id", function (req, res)
+router.put("/campgrounds/:id", checkCampgroundOwnership, function (req, res)
 {
-    campground.findByIdAndUpdate(req.params.id, req.body.campground,function (error, updatedCampground)
+    campground.findByIdAndUpdate(req.params.id, req.body.campground, function (error, updatedCampground)
     {
         if (error)
         {
             res.redirect("/campgrounds");
         }
         else
-        {            
+        {
             res.redirect("/campgrounds/" + req.params.id);
         }
     });
 });
 
 // Delete campground
-router.delete("/campgrounds/:id", function (req, res)
+router.delete("/campgrounds/:id", checkCampgroundOwnership, function (req, res)
 {
     campground.findByIdAndRemove(req.params.id, function (error)
     {
         if (error)
         {
-            console.log("Error deleting campground");   
+            console.log("Error deleting campground");
             res.redirect("/campgrounds");
         }
         else
         {
-            console.log("Succesfully deleted campground");            
+            console.log("Succesfully deleted campground");
             res.redirect("/campgrounds");
         }
     });
@@ -129,5 +127,34 @@ function isLoggedIn(req, res, next)
     }
     res.redirect("/login");
 };
+
+// Middleware for checking campground ownership
+function checkCampgroundOwnership(req, res, next)
+{
+    if (req.isAuthenticated())
+    {
+        campground.findById(req.params.id, function (error, foundCampground)
+        {
+            if (error)
+            {
+                res.redirect("back");
+            }
+            else
+            {
+                if (foundCampground.author.id.equals(req.user._id))
+                {
+                    next();
+                }
+                else
+                {
+                    res.redirect("back");
+                }
+            }
+        });
+    } else
+    {
+        res.redirect("back");
+    }
+}
 
 module.exports = router;
