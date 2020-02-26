@@ -82,6 +82,24 @@ router.put("/campgrounds/:id/comments/:comment_id", function (req, res)
     });
 });
 
+// Delete comment
+router.delete("/campgrounds/:id/comments/:comment_id", function (req, res)
+{
+    Comment.findByIdAndRemove(req.params.comment_id, function (error)
+    {
+        if (error)
+        {
+            console.log("Error deleting comment");
+            res.redirect("back");
+        }
+        else
+        {
+            console.log("Succesfully deleted campground");
+            res.redirect("/campgrounds/" + req.params.id);
+        }
+    });
+});
+
 // Middleware for checking authorization
 function isLoggedIn(req, res, next)
 {
