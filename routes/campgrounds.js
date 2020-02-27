@@ -41,11 +41,12 @@ router.post("/campgrounds", middleware.isLoggedIn, function (req, res)
     {
         if (error)
         {
+            req.flash("error", "Couldn't submit campground");
             console.log(error);
         }
         else
         {
-            console.log("======" + newlyCreated);
+            req.flash("success", "Campground submitted successfully");
             res.redirect("/campgrounds");
         }
     });
@@ -58,12 +59,10 @@ router.get("/campgrounds/:id", function (req, res)
     {
         if (error)
         {
-            console.log(error);
+            req.flash("error", "Couldn't open campground");   
         }
         else
-        {
-            console.log("Found campground");
-            console.log(foundCampground);
+        {            
             res.render("campgrounds/show", { campground: foundCampground });
         }
     });
@@ -75,7 +74,8 @@ router.get("/campgrounds/:id/edit", middleware.checkCampgroundOwnership, functio
     campground.findById(req.params.id, function (error, foundCampground)
     {
         if (error)
-        {
+        {   
+            req.flash("error", "Couldn't open campground edit view");         
             res.redirect("back");
         }
         else
@@ -92,10 +92,12 @@ router.put("/campgrounds/:id", middleware.checkCampgroundOwnership, function (re
     {
         if (error)
         {
+            req.flash("error", "Couldn't submit campground changes");
             res.redirect("/campgrounds");
         }
         else
         {
+            req.flash("success", "Campground changes submitted successfully");
             res.redirect("/campgrounds/" + req.params.id);
         }
     });
@@ -108,12 +110,12 @@ router.delete("/campgrounds/:id", middleware.checkCampgroundOwnership, function 
     {
         if (error)
         {
-            console.log("Error deleting campground");
+            req.flash("error", "Couldn't delete campground");            
             res.redirect("/campgrounds");
         }
         else
         {
-            console.log("Succesfully deleted campground");
+            req.flash("success", "Succesfully deleted campground");
             res.redirect("/campgrounds");
         }
     });

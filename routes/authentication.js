@@ -17,11 +17,12 @@ router.post("/register", function (req, res)
     {
         if (err)
         {
-            console.log(err);
-            return res.render("authentication/register");
+            //req.flash("error", "Failed registrering new user"); // Replaced with below code because of bug
+            return res.render("authentication/register", {error: err.message});
         }
         passport.authenticate("local")(req, res, function ()
         {
+            req.flash("success", "New user registrered successfully");
             res.redirect("/campgrounds");
         });
     });
@@ -30,20 +31,26 @@ router.post("/register", function (req, res)
 // Show login view
 router.get("/login", function (req, res)
 {
-    res.render("authentication/login", {message: req.flash("error")});
+    res.render("authentication/login");
 });
 
 // Call database to validate credentials
-router.post("/login", passport.authenticate("local",
-    {
-        successRedirect: "/campgrounds",
-        failureRedirect: "/login"
-    }), function (req, res) { });
+router.post("/login", function (req, res, next)
+{
+    passport.authenticate("local",
+        {
+            successRedirect: "/campgrounds",
+            failureRedirect: "/login",
+            failureFlash: true,
+            successFlash: "Welcome to YelpCamp, " + req.body.username + "!"
+        })(req, res);
+});
 
 // Logout and redirect to main view
 router.get("/logout", function (req, res)
 {
     req.logout();
+    req.flash("success", "Logged out");
     res.redirect("/campgrounds");
 });
 

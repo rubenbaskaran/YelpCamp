@@ -11,7 +11,7 @@ router.get("/campgrounds/:id/comments/new", middleware.isLoggedIn, function (req
     {
         if (error)
         {
-            console.log(error);
+            req.flash("error", "Couldn't open comment submission view");   
         } else
         {
             res.render("comments/new", { campground: campground });
@@ -26,7 +26,7 @@ router.post("/campgrounds/:id/comments", middleware.isLoggedIn, function (req, r
     {
         if (err)
         {
-            console.log(err);
+            req.flash("error", "Campground not found");
             res.redirect("/campgrounds");
         } else
         {
@@ -35,7 +35,7 @@ router.post("/campgrounds/:id/comments", middleware.isLoggedIn, function (req, r
             {
                 if (err)
                 {
-                    console.log(err);
+                    req.flash("error", "Couldn't submit comment");
                 }
                 else
                 {
@@ -43,7 +43,8 @@ router.post("/campgrounds/:id/comments", middleware.isLoggedIn, function (req, r
                     comment.author.username = req.user.username;
                     comment.save();
                     campground.comments.push(comment);
-                    campground.save();
+                    campground.save();    
+                    req.flash("success", "Comment submitted successfully");                
                     res.redirect("/campgrounds/" + campground._id);
                 }
             })
@@ -58,6 +59,7 @@ router.get("/campgrounds/:id/comments/:comment_id/edit", middleware.checkComment
     {
         if (err)
         {
+            req.flash("error", "Couldn't open comment edit view");         
             res.redirect("back");
         }
         else
@@ -74,10 +76,12 @@ router.put("/campgrounds/:id/comments/:comment_id", middleware.checkCommentOwner
     {
         if (error)
         {
+            req.flash("error", "Couldn't submit comment changes");
             res.redirect("back");
         }
         else
         {
+            req.flash("success", "Comment changes submitted successfully");
             res.redirect("/campgrounds/" + req.params.id);
         }
     });
@@ -90,12 +94,12 @@ router.delete("/campgrounds/:id/comments/:comment_id", middleware.checkCommentOw
     {
         if (error)
         {
-            console.log("Error deleting comment");
+            req.flash("error", "Error deleting comment");            
             res.redirect("back");
         }
         else
-        {
-            console.log("Succesfully deleted campground");
+        {            
+            req.flash("success", "Succesfully deleted comment");
             res.redirect("/campgrounds/" + req.params.id);
         }
     });
