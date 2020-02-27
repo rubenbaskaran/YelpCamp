@@ -30,7 +30,7 @@ router.post("/register", function (req, res)
 // Show login view
 router.get("/login", function (req, res)
 {
-    res.render("authentication/login");
+    res.render("authentication/login", {message: req.flash("error")});
 });
 
 // Call database to validate credentials

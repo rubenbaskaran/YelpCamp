@@ -6,6 +6,7 @@ var seedDB = require("./seeds");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
 var methodOverride = require("method-override");
+var flash = require("connect-flash");
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,6 +15,7 @@ mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUn
 mongoose.set('useFindAndModify', false);
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
+app.use(flash());
 // seedDB();
 
 var commentRoutes = require("./routes/comments");
